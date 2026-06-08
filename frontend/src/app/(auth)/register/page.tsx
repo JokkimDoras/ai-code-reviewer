@@ -17,25 +17,22 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
 
   const handleRegister = async () => {
-    const res = await axios.get('http://localhost:3001')
-    const data = await res.data
-    console.log(data)
-    // setLoading(true);
-    // setError('');
-    // try {
-    //   const res = await axios.post('http://localhost:3001/auth/register', {
-    //     name,
-    //     email,
-    //     password,
-    //   });
-    //   localStorage.setItem('token', res.data.token);
-    //   localStorage.setItem('user', JSON.stringify(res.data.user));
-    //   router.push('/dashboard');
-    // } catch (err: any) {
-    //   setError(err.response?.data?.message || 'Registration failed');
-    // } finally {
-    //   setLoading(false);
-    // }
+    setLoading(true);
+    setError('');
+    try {
+      const res = await axios.post('http://localhost:3001/auth/register', {
+        name,
+        email,
+        password,
+      });
+      localStorage.setItem('token', res.data.token);
+      localStorage.setItem('user', JSON.stringify(res.data.user));
+      router.push('/dashboard');
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Registration failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -58,7 +55,7 @@ export default function RegisterPage() {
           <div>
             <Label className="text-gray-300">Email</Label>
             <Input
-              type="email"
+              type='email'
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="bg-gray-800 border-gray-700 text-white"

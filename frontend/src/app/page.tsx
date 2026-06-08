@@ -7,7 +7,7 @@ export default function Home() {
       <h1 className="text-4xl font-bold mb-4">AI Code Reviewer</h1>
       <p className="text-gray-400 mb-8">Upload your code and get AI-powered reviews</p>
       <div className="flex gap-4">
-        <Link href="/auth/login">
+        <Link href="/login">
           <Button variant="outline">Login</Button>
         </Link>
         <Link href="/register">
