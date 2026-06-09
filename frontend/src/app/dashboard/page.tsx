@@ -1,9 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import axios from 'axios';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -12,83 +10,48 @@ import {
   LogOut, 
   FolderCode, 
   Plus, 
-  Calendar, 
   Layers, 
-  User as UserIcon,
-  ChevronRight
+  User as UserIcon 
 } from 'lucide-react';
 
-interface Project {
-  id: string;
-  name: string;
-  description: string;
-  created_at: string;
-}
+import { useProjects } from '@/hooks/useProjects';
+import { ProjectCard } from '@/components/dashboard/ProjectCard';
 
 export default function DashboardPage() {
   const router = useRouter();
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
-  const [newProject, setNewProject] = useState({ name: '', description: '' });
-  const [creating, setCreating] = useState(false);
   const [open, setOpen] = useState(false);
+
+  const {
+    projects,
+    loading,
+    creating,
+    newProject,
+    setNewProject,
+    fetchProjects,
+    createProject,
+    deleteProject
+  } = useProjects();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     const userData = localStorage.getItem('user');
-    setUser(userData)
 
     if (!token) {
       router.push('/login');
       return;
     }
-    setUser(JSON.parse(userData || '{}'));
+
+    if (userData) {
+      try {
+        setUser(JSON.parse(userData));
+      } catch (err) {
+        console.error('Error parsing user data from localStorage', err);
+      }
+    }
+
     fetchProjects(token);
   }, []);
-
-  const fetchProjects = async (token: string) => {
-    try {
-      const res = await axios.get('http://localhost:3001/projects', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setProjects(res.data);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const createProject = async () => {
-    setCreating(true);
-    try {
-      const token = localStorage.getItem('token');
-      const res = await axios.post(
-        'http://localhost:3001/projects',
-        newProject,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setProjects([...projects, res.data]);
-      setNewProject({ name: '', description: '' });
-      setOpen(false);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setCreating(false);
-    }
-  };
-  const deleteProject = async (id: string) => {
-    const token = localStorage.getItem('token');
-    try {
-      await axios.delete(`http://localhost:3001/projects/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setProjects(prev => prev.filter(p => p.id !== id));
-    } catch (err) {
-      console.error(err);
-    }
-  };
 
   const logout = () => {
     localStorage.removeItem('token');
@@ -141,13 +104,15 @@ export default function DashboardPage() {
                     <FolderCode className="w-4 h-4 text-neutral-400" /> New Repository Node
                   </DialogTitle>
                 </DialogHeader>
+                
+                {/* INLINE FORM DISMISSES RE-RENDER UNMOUNTING */}
                 <div className="flex flex-col gap-4 mt-4">
                   <div className="space-y-1.5">
                     <Label className="text-xs font-medium text-neutral-400">Project Name</Label>
                     <Input
                       value={newProject.name}
                       onChange={(e) => setNewProject({ ...newProject, name: e.target.value })}
-                      className="bg-[#141416] border-white/[0.06] text-white placeholder:text-neutral-700 text-sm h-10 rounded-xl focus-visible:ring-1 focus-visible:ring-neutral-500 focus-visible:border-neutral-500 outline-none transition-all"
+                      className="bg-[#141416] border-white/[0.06] text-white placeholder:text-neutral-700 text-sm h-10 rounded-xl focus-visible:ring-1 focus-visible:ring-neutral-500 outline-none transition-all"
                       placeholder="e.g., core-api-service"
                     />
                   </div>
@@ -156,12 +121,12 @@ export default function DashboardPage() {
                     <Input
                       value={newProject.description}
                       onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
-                      className="bg-[#141416] border-white/[0.06] text-white placeholder:text-neutral-700 text-sm h-10 rounded-xl focus-visible:ring-1 focus-visible:ring-neutral-500 focus-visible:border-neutral-500 outline-none transition-all"
+                      className="bg-[#141416] border-white/[0.06] text-white placeholder:text-neutral-700 text-sm h-10 rounded-xl focus-visible:ring-1 focus-visible:ring-neutral-500 outline-none transition-all"
                       placeholder="What is this repository context about?"
                     />
                   </div>
                   <Button 
-                    onClick={createProject} 
+                    onClick={() => createProject(() => setOpen(false))} 
                     disabled={creating}
                     className="w-full bg-white hover:bg-neutral-200 text-black font-medium h-10 rounded-xl transition-colors text-xs mt-2"
                   >
@@ -203,7 +168,7 @@ export default function DashboardPage() {
             <h1 className="text-sm font-semibold text-white tracking-tight">NeurolLint</h1>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-neutral-400 text-xs">Hi, {user?.name}</span>
+            <span className="text-neutral-400 text-xs">Hi, {user?.name || 'Operator'}</span>
             <button onClick={logout} className="text-red-400 hover:underline text-xs font-medium">Logout</button>
           </div>
         </div>
@@ -222,6 +187,42 @@ export default function DashboardPage() {
                 <span>New Project</span>
               </Button>
             </DialogTrigger>
+            <DialogContent className="bg-[#0A0A0C] border border-white/[0.06] text-white max-w-sm rounded-2xl p-6 shadow-2xl">
+              <DialogHeader className="space-y-1">
+                <DialogTitle className="text-lg font-medium tracking-tight text-white flex items-center gap-2">
+                  <FolderCode className="w-4 h-4 text-neutral-400" /> New Repository Node
+                </DialogTitle>
+              </DialogHeader>
+              
+              {/* COMPACT INLINE REPLICA FOR MOBILE PANEL VIEWPORTS */}
+              <div className="flex flex-col gap-4 mt-4">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium text-neutral-400">Project Name</Label>
+                  <Input
+                    value={newProject.name}
+                    onChange={(e) => setNewProject({ ...newProject, name: e.target.value })}
+                    className="bg-[#141416] border-white/[0.06] text-white placeholder:text-neutral-700 text-sm h-10 rounded-xl focus-visible:ring-1 focus-visible:ring-neutral-500 outline-none transition-all"
+                    placeholder="e.g., core-api-service"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium text-neutral-400">Description</Label>
+                  <Input
+                    value={newProject.description}
+                    onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
+                    className="bg-[#141416] border-white/[0.06] text-white placeholder:text-neutral-700 text-sm h-10 rounded-xl focus-visible:ring-1 focus-visible:ring-neutral-500 outline-none transition-all"
+                    placeholder="What is this repository context about?"
+                  />
+                </div>
+                <Button 
+                  onClick={() => createProject(() => setOpen(false))} 
+                  disabled={creating}
+                  className="w-full bg-white hover:bg-neutral-200 text-black font-medium h-10 rounded-xl transition-colors text-xs mt-2"
+                >
+                  {creating ? 'Spawning Index...' : 'Create Workspace'}
+                </Button>
+              </div>
+            </DialogContent>
           </Dialog>
         </div>
 
@@ -249,39 +250,11 @@ export default function DashboardPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {projects.map((project) => (
-              <Card
+              <ProjectCard 
                 key={project.id}
-                className="bg-[#141416] border border-white/[0.04] hover:border-white/[0.12] rounded-2xl shadow-xl transition-all cursor-pointer overflow-hidden group flex flex-col justify-between"
-                onClick={() => router.push(`/dashboard/projects/${project.id}`)}
-              >
-                <CardHeader className="p-5 pb-3">
-                  <div className="flex items-start justify-between gap-4">
-                    <CardTitle className="text-neutral-200 font-medium text-sm tracking-tight group-hover:text-white transition-colors font-sans truncate">
-                      {project.name}
-                    </CardTitle>
-                    <div className="w-6 h-6 rounded-md bg-white/[0.02] border border-white/[0.06] flex items-center justify-center text-neutral-500 group-hover:text-neutral-300 transition-colors opacity-0 group-hover:opacity-100 transform translate-x-1 group-hover:translate-x-0 transition-all">
-                      <ChevronRight className="w-3.5 h-3.5" />
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="p-5 pt-0 space-y-4">
-                  <p className="text-neutral-400 text-xs leading-relaxed font-normal min-h-[32px] line-clamp-2">
-                    {project.description || 'No description provided for this codebase reference.'}
-                  </p>
-                  <div className="pt-3 border-t border-white/[0.04] flex items-center justify-between text-[10px] text-neutral-500 font-medium">
-                    <div className="flex items-center gap-1">
-                      <Calendar className="w-3 h-3 text-neutral-600" />
-                      <span>{new Date(project.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}</span>
-                    </div>
-                    <button
-  onClick={(e) => { e.stopPropagation(); deleteProject(project.id); }}
-  className="text-red-500/50 hover:text-red-400 text-[10px] transition-colors"
->
-  Delete
-</button>
-                  </div>
-                </CardContent>
-              </Card>
+                project={project}
+                onDelete={deleteProject}
+              />
             ))}
           </div>
         )}

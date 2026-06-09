@@ -14,7 +14,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             <Terminal className="w-4 h-4" />
           </div>
           <div>
-            <span className="text-white font-medium tracking-tight text-sm">CodeReview</span>
+            <span className="text-white font-medium tracking-tight text-sm">NeurolLint</span>
             <span className="text-neutral-500 font-light text-sm ml-0.5">.ai</span>
           </div>
         </div>
