@@ -21,4 +21,8 @@ export class ProjectsController {
   delete(@Param('id') id: string, @Request() req: any) {
     return this.projectsService.delete(id, req.user.id);
   }
+  @Get(':id/reviews')
+getReviews(@Param('id') id: string) {
+  return this.projectsService.getReviews(id);
+}
 }

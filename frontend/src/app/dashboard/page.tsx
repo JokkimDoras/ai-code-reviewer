@@ -78,6 +78,17 @@ export default function DashboardPage() {
       setCreating(false);
     }
   };
+  const deleteProject = async (id: string) => {
+    const token = localStorage.getItem('token');
+    try {
+      await axios.delete(`http://localhost:3001/projects/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setProjects(prev => prev.filter(p => p.id !== id));
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const logout = () => {
     localStorage.removeItem('token');
@@ -262,9 +273,12 @@ export default function DashboardPage() {
                       <Calendar className="w-3 h-3 text-neutral-600" />
                       <span>{new Date(project.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}</span>
                     </div>
-                    <span className="bg-white/[0.02] border border-white/[0.04] text-neutral-400 px-1.5 py-0.5 rounded text-[9px] uppercase font-semibold font-sans tracking-wide">
-                      Workspace
-                    </span>
+                    <button
+  onClick={(e) => { e.stopPropagation(); deleteProject(project.id); }}
+  className="text-red-500/50 hover:text-red-400 text-[10px] transition-colors"
+>
+  Delete
+</button>
                   </div>
                 </CardContent>
               </Card>

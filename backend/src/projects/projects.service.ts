@@ -26,6 +26,16 @@ export class ProjectsService {
     if (error) throw new Error(error.message);
     return data;
   }
+  async getReviews(projectId: string) {
+    const supabase = this.supabaseService.getClient();
+    const { data, error } = await supabase
+      .from('reviews')
+      .select('*')
+      .eq('project_id', projectId)
+      .order('created_at', { ascending: false });
+    if (error) throw new Error(error.message);
+    return data;
+  }
 
   async delete(id: string, userId: string) {
     const supabase = this.supabaseService.getClient();
