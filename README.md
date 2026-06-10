@@ -4,7 +4,7 @@ A Software that enables developers to upload code files and receive intelligent,
 
 ---
 
-## 🚀 Features
+##  Features
 
 - **Authentication** — Secure register/login with JWT-based session management
 - **Project Management** — Create, view, and delete code review projects
@@ -16,7 +16,7 @@ A Software that enables developers to upload code files and receive intelligent,
 
 ---
 
-## 🛠 Tech Stack
+##  Tech Stack
 
 ### Frontend
 - Next.js 15 (App Router) + TypeScript
@@ -75,7 +75,7 @@ neurolint/
 
 ---
 
-## ⚙️ Prerequisites
+##  Prerequisites
 
 - Node.js 18+
 - npm
@@ -84,7 +84,7 @@ neurolint/
 
 ---
 
-## 🔧 Setup & Installation
+##  Setup & Installation
 
 ### 1. Clone the Repository
 
@@ -142,7 +142,7 @@ npm run dev
 
 ---
 
-## 🗄️ Database Setup
+##  Database Setup
 
 Run the following SQL in your **Supabase SQL Editor** to create all required tables:
 
@@ -210,7 +210,7 @@ CREATE TABLE messages (
 
 ---
 
-## 🔌 API Endpoints
+##  API Endpoints
 
 ### Auth
 | Method | Endpoint | Description |
@@ -241,7 +241,7 @@ CREATE TABLE messages (
 
 ---
 
-## 🤖 AI Configuration
+##  AI Configuration
 
 The AI service connects to any OpenAI-compatible endpoint. By default it uses LM Studio at `http://localhost:1234`.
 
@@ -263,7 +263,7 @@ private readonly model  = 'YOUR_MODEL_NAME';
 
 ---
 
-## 🖥️ Usage
+##  Usage
 
 1. Open `http://localhost:3000` in your browser
 2. Register an account or login
