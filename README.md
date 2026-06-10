@@ -1,10 +1,10 @@
-NeurolLint — AI-Powered Code Review Assistant
+# **NeurolLint — AI-Powered Code Review Assistant**
 
 A full-stack application that enables developers to upload code files and receive intelligent, structured code reviews powered by a local LLM (via LM Studio) or any OpenAI-compatible API endpoint.
 
 ---
 
-##  Features
+## Features
 
 - **Authentication** — Secure register/login with JWT-based session management
 - **Project Management** — Create, view, and delete code review projects
@@ -16,7 +16,7 @@ A full-stack application that enables developers to upload code files and receiv
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 ### Frontend
 - Next.js 15 (App Router) + TypeScript
@@ -56,7 +56,7 @@ neurolint/
 
 ---
 
-## ⚙️ Prerequisites
+## Prerequisites
 
 - Node.js 18+
 - npm
@@ -218,7 +218,8 @@ Supported providers:
 
 ##  Screenshots
 
-> Add screenshots of your app here
+<img width="1900" height="916" alt="Screenshot 2026-06-10 100545" src="https://github.com/user-attachments/assets/1bf96597-c519-4407-8d73-0970f111c406" />
+
 
 ---
 
